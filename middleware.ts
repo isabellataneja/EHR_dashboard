@@ -14,12 +14,15 @@ export default auth((req) => {
     return NextResponse.redirect(new URL('/password', req.url))
   }
 
-  if (!req.auth && !pathname.startsWith('/api/auth') && !isAuthRoute) {
-    return NextResponse.redirect(new URL('/auth/signin', req.url))
-  }
+  const authEnabled = process.env.ENABLE_AUTH === 'true'
+  if (authEnabled) {
+    if (!req.auth && !pathname.startsWith('/api/auth') && !isAuthRoute) {
+      return NextResponse.redirect(new URL('/auth/signin', req.url))
+    }
 
-  if (user?.status === 'PENDING' && !pathname.startsWith('/auth/pending')) {
-    return NextResponse.redirect(new URL('/auth/pending', req.url))
+    if (user?.status === 'PENDING' && !pathname.startsWith('/auth/pending')) {
+      return NextResponse.redirect(new URL('/auth/pending', req.url))
+    }
   }
 
   return NextResponse.next()
